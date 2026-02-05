@@ -1,5 +1,4 @@
 server:
-  # Render automatically detects port 10000
   port: ${PORT:8080}
 
 spring:
@@ -7,6 +6,10 @@ spring:
     name: api-gateway
   cloud:
     gateway:
+      # Connection timeout badhaya hai taaki 500 error na aaye
+      httpclient:
+        connect-timeout: 10000
+        response-timeout: 30s
       globalcors:
         add-to-gateway-request-chain: true
         cors-configurations:
@@ -23,25 +26,24 @@ spring:
 
       routes:
         - id: user-service
-          uri: lb://user-service
+          # lb:// hata kar seedha URL diya hai timeout se bachne ke liye
+          uri: https://ecoride-deploy-user.onrender.com
           predicates:
             - Path=/users/**
 
         - id: ride-service
-          uri: lb://ride-service
+          uri: https://ecoride-ride-service.onrender.com
           predicates:
             - Path=/rides/**
 
 eureka:
   client:
     service-url:
-      # Aapka live Eureka Server link
       defaultZone: ${EUREKA_SERVER_URL:https://service-registry-qhsy.onrender.com/eureka/}
     register-with-eureka: true
     fetch-registry: true
   instance:
-    # Render par dynamic IPs ki wajah se hostname best hai
     prefer-ip-address: false
     hostname: api-gateway-n7gy.onrender.com
-    # Render's specific port binding
+    # Is line ko rehne dete hain par URI preference seedhi HTTPS par hai
     non-secure-port: ${server.port}
