@@ -1,4 +1,5 @@
 server:
+  # Render automatically detects port 10000
   port: ${PORT:8080}
 
 spring:
@@ -33,8 +34,14 @@ spring:
 
 eureka:
   client:
-    serviceUrl:
-      # Local/Docker registry fallback ke saath environment variable use kiya hai
-      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka/}
+    service-url:
+      # Aapka live Eureka Server link
+      defaultZone: ${EUREKA_SERVER_URL:https://service-registry-qhsy.onrender.com/eureka/}
+    register-with-eureka: true
+    fetch-registry: true
   instance:
-    prefer-ip-address: true
+    # Render par dynamic IPs ki wajah se hostname best hai
+    prefer-ip-address: false
+    hostname: api-gateway-n7gy.onrender.com
+    # Render's specific port binding
+    non-secure-port: ${server.port}
